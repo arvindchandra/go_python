@@ -1,0 +1,6 @@
+FROM python:3.12-slim
+WORKDIR /workspace
+COPY sample_project/requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+COPY . /workspace
+CMD ["pytest", "-q", "sample_project/tests/test_app.py", "--junitxml=/workspace/.artifacts/junit.xml"]

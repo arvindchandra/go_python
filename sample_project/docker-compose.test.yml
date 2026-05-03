@@ -1,0 +1,8 @@
+services:
+  tester:
+    build:
+      context: ..
+      dockerfile: sample_project/Dockerfile.test
+    working_dir: /workspace
+    volumes:
+      - ../:/workspace

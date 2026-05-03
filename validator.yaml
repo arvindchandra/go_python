@@ -1,0 +1,23 @@
+version: 1
+project: sample-precheckin-validator
+container:
+  compose_file: sample_project/docker-compose.test.yml
+  service: tester
+  workdir: /workspace
+  env:
+    APP_ENV: ci
+    PYTHONUNBUFFERED: "1"
+quarantine_file: scripts/quarantine.yaml
+critical_paths:
+  sample_project/:
+    services: [sample]
+    tests:
+      - sample_project/tests/test_app.py
+services:
+  sample:
+    image_build: false
+    test_command:
+      - pytest
+      - -q
+      - sample_project/tests/test_app.py
+      - --junitxml=/workspace/.artifacts/junit.xml
