@@ -1,25 +1,52 @@
 package gitdiff
 
 import (
-    "bytes"
-    "os/exec"
-    "strings"
+	"bytes"
+	"fmt"
+	"os"
+	"os/exec"
+	"strings"
 )
 
 func DefaultChangedFiles() ([]string, error) {
-    cmd := exec.Command("git", "diff", "--name-only", "HEAD~1..HEAD")
-    var out bytes.Buffer
-    cmd.Stdout = &out
-    if err := cmd.Run(); err != nil {
-        return nil, err
-    }
-    lines := strings.Split(strings.TrimSpace(out.String()), "\n")
-    var files []string
-    for _, line := range lines {
-        line = strings.TrimSpace(line)
-        if line != "" {
-            files = append(files, line)
-        }
-    }
-    return files, nil
+	if base := os.Getenv("GITHUB_BASE_REF"); base != "" {
+		return changedFilesAgainstBase(base)
+	}
+
+	if before := os.Getenv("GITHUB_EVENT_BEFORE"); before != "" {
+		return changedFilesBetween(before, "HEAD")
+	}
+
+	return changedFilesBetween("HEAD~1", "HEAD")
+}
+
+func changedFilesAgainstBase(base string) ([]string, error) {
+	if err := exec.Command("git", "fetch", "origin", base, "--depth=1").Run(); err != nil {
+		return nil, fmt.Errorf("fetch base branch %q: %w", base, err)
+	}
+	return changedFilesBetween("origin/"+base, "HEAD")
+}
+
+func changedFilesBetween(from, to string) ([]string, error) {
+	cmd := exec.Command("git", "diff", "--name-only", "--diff-filter=d", from, to)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("git diff %s..%s: %w: %s", from, to, err, strings.TrimSpace(out.String()))
+	}
+
+	raw := strings.TrimSpace(out.String())
+	if raw == "" {
+		return []string{}, nil
+	}
+
+	lines := strings.Split(raw, "\n")
+	files := make([]string, 0, len(lines))
+	for _, line := range lines {
+		if line = strings.TrimSpace(line); line != "" {
+			files = append(files, line)
+		}
+	}
+	return files, nil
 }
