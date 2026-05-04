@@ -23,8 +23,7 @@ func main() {
     case "run":
         runCmd(os.Args[2:])
     default:
-        fmt.Printf("unknown command: %s
-", os.Args[1])
+        fmt.Printf("unknown command: %s", os.Args[1])
         os.Exit(2)
     }
 }
@@ -38,8 +37,7 @@ func runCmd(args []string) {
 
     cfg, err := config.Load(*configPath)
     if err != nil {
-        fmt.Printf("config error: %v
-", err)
+        fmt.Printf("config error: %v", err)
         os.Exit(1)
     }
 
@@ -49,8 +47,7 @@ func runCmd(args []string) {
     } else {
         changedFiles, err = gitdiff.DefaultChangedFiles()
         if err != nil {
-            fmt.Printf("git diff error: %v
-", err)
+            fmt.Printf("git diff error: %v", err)
             os.Exit(1)
         }
     }
@@ -62,26 +59,22 @@ func runCmd(args []string) {
     }
 
     if err := os.MkdirAll(*outputDir, 0o755); err != nil {
-        fmt.Printf("output dir error: %v
-", err)
+        fmt.Printf("output dir error: %v", err)
         os.Exit(1)
     }
 
     result, err := runner.Execute(cfg, plan, *outputDir)
     if err != nil {
-        fmt.Printf("run error: %v
-", err)
+        fmt.Printf("run error: %v", err)
         os.Exit(1)
     }
 
     if err := report.WriteSummary(filepath.Join(*outputDir, "summary.json"), result); err != nil {
-        fmt.Printf("summary write error: %v
-", err)
+        fmt.Printf("summary write error: %v", err)
         os.Exit(1)
     }
 
-    fmt.Printf("status=%s
-", result.Status)
+    fmt.Printf("status=%s", result.Status)
     if result.Status != "passed" {
         os.Exit(1)
     }

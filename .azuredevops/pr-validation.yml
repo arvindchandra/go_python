@@ -1,1 +1,1 @@
-# Deprecated in this version. GitHub Actions workflow now lives at .github/workflows/precheckin.yml
+# Deprecated; GitHub Actions workflow lives in .github/workflows/precheckin.yml

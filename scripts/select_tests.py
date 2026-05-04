@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
-import json
-import sys
-import yaml
-
+import json, sys, yaml
 cfg = yaml.safe_load(open(sys.argv[1]))
 changed = sys.argv[2:]
-services = set()
-tests = set()
+services = set(); tests = set()
 for prefix, entry in cfg.get('critical_paths', {}).items():
     for f in changed:
         if f.startswith(prefix):

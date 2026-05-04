@@ -13,8 +13,7 @@ func DefaultChangedFiles() ([]string, error) {
     if err := cmd.Run(); err != nil {
         return nil, err
     }
-    lines := strings.Split(strings.TrimSpace(out.String()), "
-")
+    lines := strings.Split(strings.TrimSpace(out.String()), "\n")
     var files []string
     for _, line := range lines {
         line = strings.TrimSpace(line)
