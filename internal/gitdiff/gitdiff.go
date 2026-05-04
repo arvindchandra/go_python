@@ -13,11 +13,11 @@ func DefaultChangedFiles() ([]string, error) {
 		return changedFilesAgainstBase(base)
 	}
 
-	if before := os.Getenv("GITHUB_EVENT_BEFORE"); before != "" {
+	if before := os.Getenv("GITHUB_EVENT_BEFORE"); before != "" && before != "0000000000000000000000000000000000000000" {
 		return changedFilesBetween(before, "HEAD")
 	}
 
-	return changedFilesBetween("HEAD~1", "HEAD")
+	return changedFilesBetween("HEAD^", "HEAD")
 }
 
 func changedFilesAgainstBase(base string) ([]string, error) {
@@ -44,7 +44,8 @@ func changedFilesBetween(from, to string) ([]string, error) {
 	lines := strings.Split(raw, "\n")
 	files := make([]string, 0, len(lines))
 	for _, line := range lines {
-		if line = strings.TrimSpace(line); line != "" {
+		line = strings.TrimSpace(line)
+		if line != "" {
 			files = append(files, line)
 		}
 	}
