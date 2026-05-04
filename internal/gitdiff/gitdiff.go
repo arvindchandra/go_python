@@ -17,7 +17,7 @@ func DefaultChangedFiles() ([]string, error) {
 		return changedFilesBetween(before, "HEAD")
 	}
 
-	return changedFilesBetween("HEAD^", "HEAD")
+	return []string{}, nil
 }
 
 func changedFilesAgainstBase(base string) ([]string, error) {
